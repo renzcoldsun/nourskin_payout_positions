@@ -3,6 +3,7 @@
 #include <QProcess>
 #include <QString>
 #include <QSettings>
+#include <QDateTime>
 
 Task::Task(QObject *parent) :
     QObject(parent)
@@ -17,13 +18,20 @@ void Task::run(void)
     QSettings settings("/etc/nourskin_positions.ini", QSettings::IniFormat);
     QString csv_file01 = "/tmp/positions_csv_out_01.txt";
     QString csv_file02 = "/tmp/positions_csv_out_02.txt";
-    QString reportFile = "/root/reports-positions.csv";
     // initialize QMaps;
     positions1 = QMap<int, int>();
     positions2 = QMap<int, int>();
     changedPositions = QMap<int, int>();
     userInfo = QMap<int, QString>();
 
+    // initialize report output
+    QDateTime dTime = QDateTime::currentDateTime();
+    QString reportFile = QString("/root/reports-positions-%1-%2-%3-%4-%5-%6.csv").arg(QString::number(dTime.date().year()),
+                                                                                      QString::number(dTime.date().month()),
+                                                                                      QString::number(dTime.date().day()),
+                                                                                      QString::number(dTime.time().hour()),
+                                                                                      QString::number(dTime.time().minute()),
+                                                                                      QString::number(dTime.time().second()));
     settings.beginGroup("positions");
     QString hostname = settings.value("hostname").toString();
     QString username = settings.value("username").toString();
