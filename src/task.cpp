@@ -17,6 +17,7 @@ void Task::run(void)
     QSettings settings("/etc/nourskin_positions.ini", QSettings::IniFormat);
     QString csv_file01 = "/tmp/positions_csv_out_01.txt";
     QString csv_file02 = "/tmp/positions_csv_out_02.txt";
+    QString reportFile = "/root/reports-positions.csv";
     // initialize QMaps;
     positions1 = QMap<int, int>();
     positions2 = QMap<int, int>();
@@ -117,7 +118,17 @@ void Task::run(void)
     }
 
     // we got a list of positions. let's get the info to save to a CSV
-    std::cout << "Number of changed positions: " << changedPositions.count() << std::endl;
+    std::cout << std::endl << "Number of changed positions: " << changedPositions.count() << std::endl << std::endl;
+    if(changedPositions.count() > 0)
+    {
+        for(QMap<int, int>::iterator iiter = changedPositions.begin();iiter != changedPositions.end(); ++iter)
+        {
+            int id = iiter.key();
+            int position = iiter.value();
+            QString writeThis = QString("%1:%2").arg(id, position);
+            writeToFile(reportFile, writeThis);
+        }
+    }
 
     emit finished();
 }
