@@ -10,6 +10,7 @@
 #include <iostream>
 
 typedef QMap<int, float> floatMap;
+typedef QMap<int, int> intIntMap;
 
 class Task : public QObject
 {
@@ -29,7 +30,9 @@ private:
     QMap<int, int> positions2;
     QMap<int, int> changedPositions;
     QMap<int, QString> userInfo;
+    intIntMap upline_ids1, upline_ids2;
 
+    void updatePositions(intIntMap *, intIntMap *);
     void writeToFile(QString, QString);
 };
 

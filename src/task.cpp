@@ -23,6 +23,8 @@ void Task::run(void)
     positions2 = QMap<int, int>();
     changedPositions = QMap<int, int>();
     userInfo = QMap<int, QString>();
+    upline_ids1 = QMap<int, int>();
+    upline_ids2 = QMap<int, int>();
 
     // initialize report output
     QDateTime dTime = QDateTime::currentDateTime();
@@ -73,15 +75,18 @@ void Task::run(void)
         exit(1);
     }
     // get the positions
-    QSqlQuery q1("SELECT user_ptr_id,position_id FROM userprofile");
+    QSqlQuery q1("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
     while(q1.next())
     {
         positions1[q1.value(0).toInt()] = q1.value(1).toInt();
+        upline_ids1[q1.value(0).toInt()] = q1.value(2).toInt();
         QString toWrite = q1.value(0).toString() + QString(":") + q1.value(1).toString();
         writeToFile(csv_file01, toWrite);
     }
     std::cout << "This positions collection has this number of record: " << positions1.count() << std::endl;
     db.close();
+    // update the positions in this one.
+    this->updatePositions(&positions1, &upline_ids1);
     
     // flush the second file;
     shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %1").arg(username, password, endMonthFile);
@@ -101,10 +106,13 @@ void Task::run(void)
     while(q2.next())
     {
         positions2[q2.value(0).toInt()] = q2.value(1).toInt();
+        upline_ids2[q1.value(0).toInt()] = q1.value(2).toInt();
         QString toWrite = q2.value(0).toString() + QString(":") + q2.value(1).toString();
         writeToFile(csv_file02, toWrite);
     }
     std::cout << "This positions collection has this number of record: " << positions2.count() << std::endl;
+    // update the positions in this one.
+    this->updatePositions(&positions2, &upline_ids2);
     // compare the positions
     QMap<int, int>::iterator iter;
     for(iter = positions2.begin();iter != positions2.end(); ++iter)
@@ -153,5 +161,12 @@ void Task::writeToFile(QString filename, QString toWrite)
     QTextStream outStream(&outputFile);
     outStream << toWrite << QString("\n");
     outputFile.close();
+}
+
+void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
+{
+    for(QMap<int, int>::iterator iiter=positions->begin(); iiter != positions->end(); ++iiter)
+        positions->value(iiter.key(), 1);
+
 }
 
