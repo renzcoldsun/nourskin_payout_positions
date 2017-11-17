@@ -237,6 +237,7 @@ void Task::updatePositions(intIntMap *positions, intIntListMap *uplines)
                 positions->insert(user_id, current_position);
             }
         }
+        std::cout << "Total Matching This Position : " << position_matching << std::endl;
         std::cout << "Gathering Next Position : " << match_position << std::endl;
         match_position++;
         if(position_matching <= 0) break;   // break if there are no more matching positions
