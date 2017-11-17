@@ -55,7 +55,7 @@ void Task::run(void)
         std::cout << "file exists : " << endMonthFile.toStdString() << std::endl;
     }
     // flush the first file;
-    QString shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %1").arg(username, password, startMonthFile);
+    QString shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %3").arg(username, password, startMonthFile);
     std::cout << "Running: " << shellCommand.toStdString() << std::endl;
     shellProcess.start("/usr/bin/bash");
     shellProcess.write(shellCommand.toStdString().c_str());
@@ -89,7 +89,7 @@ void Task::run(void)
     this->updatePositions(&positions1, &upline_ids1);
     
     // flush the second file;
-    shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %1").arg(username, password, endMonthFile);
+    shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %3").arg(username, password, endMonthFile);
     std::cout << "Running: " << shellCommand.toStdString() << std::endl;
     shellProcess.start("/usr/bin/bash");
     shellProcess.write(shellCommand.toStdString().c_str());
