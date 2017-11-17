@@ -103,7 +103,7 @@ void Task::run(void)
     std::cout << "This positions collection has this number of record: " << positions1.count() << std::endl;
     db.close();
     // update the positions in this one.
-    this->updatePositions(&positions1);
+    this->updatePositions(&positions1, &upline_ids1);
     
     // flush the second file;
     shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %3").arg(username, password, endMonthFile);
@@ -139,7 +139,7 @@ void Task::run(void)
     }
     std::cout << "This positions collection has this number of record: " << positions2.count() << std::endl;
     // update the positions in this one.
-    this->updatePositions(&positions2);
+    this->updatePositions(&positions2, &upline_ids2);
     // compare the positions
     QMap<int, int>::iterator iter;
     for(iter = positions2.begin();iter != positions2.end(); ++iter)
@@ -190,12 +190,9 @@ void Task::writeToFile(QString filename, QString toWrite)
     outputFile.close();
 }
 
-void Task::updatePositions(intIntMap *positions)
+void Task::updatePositions(intIntMap *positions, intIntListMap *uplines)
 {
     int user_id = 0;
-    int tmp_user_id = 0;
-    int upline_id = 0;
-    int uplines_count = 0;
     int current_position = 0;
     int position_matching = 0;
     int match_position = 1;
@@ -212,15 +209,28 @@ void Task::updatePositions(intIntMap *positions)
     while(true)
     {
         position_matching = 0;
-        for(iiter=positions->begin(); iiter != positions->end(); ++iiter)
+        for(iiter=positions->end(); iiter != positions->begin(); iiter--)
         {
             std::cout << "ID:" << iiter.key() << "VALUE: " << iiter.value() << std::endl;
             user_id = iiter.key();
             current_position = iiter.value();
             if(current_position < match_position) continue;
             position_matching++;
-            uplines_count = 0;
             promote = false;
+            QList<int> downLines = uplines->value(user_id);
+            if(downLines.count() < promote_qualifier) continue;
+            int qualified_downlines_count = 0;
+            foreach(int downline_id, downLines)
+            {
+                int downline_position = positions->value(downline_id);
+                if(downline_position >= match_position)
+                    qualified_downlines_count++;
+                if(qualified_downlines_count > promote_qualifier)
+                {
+                    promote = true;
+                    break;
+                }
+            }
 
             if(promote)
             {

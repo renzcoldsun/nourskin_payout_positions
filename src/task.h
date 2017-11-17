@@ -35,7 +35,7 @@ private:
     QMap<int, QString> userInfo;
     intIntListMap upline_ids1, upline_ids2;
 
-    void updatePositions(intIntMap *);
+    void updatePositions(intIntMap *, intIntListMap *uplines);
     void writeToFile(QString, QString);
 };
 
