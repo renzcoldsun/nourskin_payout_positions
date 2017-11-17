@@ -13,7 +13,7 @@
 
 typedef QMap<int, float> floatMap;
 typedef QMap<int, int> intIntMap;
-typedef QMap<int, QList<int>> intIntListMap;
+typedef QMap<int, QList<int> > intIntListMap;
 
 class Task : public QObject
 {
