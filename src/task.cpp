@@ -24,8 +24,8 @@ void Task::run(void)
     positions2 = QMap<int, int>();
     changedPositions = QMap<int, int>();
     userInfo = QMap<int, QString>();
-    upline_ids1 = QMap<int, QList<int>>();
-    upline_ids2 = QMap<int, QList<int>>();
+    upline_ids1 = QMap<int, QList<int> >();
+    upline_ids2 = QMap<int, QList<int> >();
     int user_id = 0;
     int upline_id = 0;
     int position_id = 0;
