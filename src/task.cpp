@@ -181,7 +181,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
     for(iiter =positions->begin(); iiter != positions->end(); ++iiter)
     {
         // std::cout << "ID:" << iiter.key() << "VALUE:" << iiter.value() << std::endl;
-        positions->value(iiter.key(), 1);
+        positions->insert(iiter.key(), 1);
     }
     // loop for all positions check if there are positions that have
     while(true)
@@ -215,7 +215,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
             if(promote)
             {
                 current_position++;
-                positions->value(user_id, current_position);
+                positions->insert(user_id, current_position);
             }
         }
         std::cout << "Gathering Next Position : " << match_position << std::endl;
