@@ -120,7 +120,7 @@ void Task::run(void)
     }
     // get the positions again
     std::cout << "Getting data..." << std::endl;
-    QSqlQuery q2("SELECT user_ptr_id,position_id FROM userprofile");
+    QSqlQuery q2("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
     while(q2.next())
     {
         user_id = q2.value(0).toInt();
@@ -211,10 +211,9 @@ void Task::updatePositions(intIntMap *positions, intIntListMap *uplines)
         position_matching = 0;
         for(iiter=positions->end(); iiter != positions->begin(); iiter--)
         {
-            std::cout << "ID:" << iiter.key() << "VALUE: " << iiter.value() << std::endl;
             user_id = iiter.key();
             current_position = iiter.value();
-            if(current_position < match_position) continue;
+            if(current_position != match_position) continue;
             position_matching++;
             promote = false;
             QList<int> downLines = uplines->value(user_id);
