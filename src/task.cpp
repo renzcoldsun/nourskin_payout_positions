@@ -18,13 +18,17 @@ void Task::run(void)
     QSettings settings("/etc/nourskin_positions.ini", QSettings::IniFormat);
     QString csv_file01 = "/tmp/positions_csv_out_01.txt";
     QString csv_file02 = "/tmp/positions_csv_out_02.txt";
+    QList<int> qListInt = QList<int>();
     // initialize QMaps;
     positions1 = QMap<int, int>();
     positions2 = QMap<int, int>();
     changedPositions = QMap<int, int>();
     userInfo = QMap<int, QString>();
-    upline_ids1 = QMap<int, int>();
-    upline_ids2 = QMap<int, int>();
+    upline_ids1 = QMap<int, QList<int>>();
+    upline_ids2 = QMap<int, QList<int>>();
+    int user_id = 0;
+    int upline_id = 0;
+    int position_id = 0;
 
     // initialize report output
     QDateTime dTime = QDateTime::currentDateTime();
@@ -79,15 +83,27 @@ void Task::run(void)
     QSqlQuery q1("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
     while(q1.next())
     {
-        positions1[q1.value(0).toInt()] = q1.value(1).toInt();
-        upline_ids1[q1.value(0).toInt()] = q1.value(2).toInt();
-        QString toWrite = q1.value(0).toString() + QString(":") + q1.value(1).toString();
-        writeToFile(csv_file01, toWrite);
+        user_id = q1.value(0).toInt();
+        position_id = q1.value(1).toInt();
+        upline_id = q1.value(2).toInt();
+        positions1[user_id] = position_id;
+        if(!upline_ids1.keys().contains(upline_id))
+        {
+            qListInt = QList<int>();
+            qListInt.append(user_id);
+        } else {
+            qListInt = upline_ids1.value(upline_id);
+            qListInt.append(user_id);
+        }
+        upline_ids1.insert(upline_id, qListInt);
+        // upline_ids1[q1.value(0).toInt()] = q1.value(2).toInt();
+        // QString toWrite = q1.value(0).toString() + QString(":") + q1.value(1).toString();
+        // writeToFile(csv_file01, toWrite);
     }
     std::cout << "This positions collection has this number of record: " << positions1.count() << std::endl;
     db.close();
     // update the positions in this one.
-    this->updatePositions(&positions1, &upline_ids1);
+    this->updatePositions(&positions1);
     
     // flush the second file;
     shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %3").arg(username, password, endMonthFile);
@@ -107,14 +123,23 @@ void Task::run(void)
     QSqlQuery q2("SELECT user_ptr_id,position_id FROM userprofile");
     while(q2.next())
     {
-        positions2[q2.value(0).toInt()] = q2.value(1).toInt();
-        upline_ids2[q1.value(0).toInt()] = q1.value(2).toInt();
-        QString toWrite = q2.value(0).toString() + QString(":") + q2.value(1).toString();
-        writeToFile(csv_file02, toWrite);
+        user_id = q2.value(0).toInt();
+        position_id = q2.value(1).toInt();
+        upline_id = q2.value(2).toInt();
+        positions1[user_id] = position_id;
+        if(!upline_ids2.keys().contains(upline_id))
+        {
+            qListInt = QList<int>();
+            qListInt.append(user_id);
+        } else {
+            qListInt = upline_ids2.value(upline_id);
+            qListInt.append(user_id);
+        }
+        upline_ids2.insert(upline_id, qListInt);
     }
     std::cout << "This positions collection has this number of record: " << positions2.count() << std::endl;
     // update the positions in this one.
-    this->updatePositions(&positions2, &upline_ids2);
+    this->updatePositions(&positions2);
     // compare the positions
     QMap<int, int>::iterator iter;
     for(iter = positions2.begin();iter != positions2.end(); ++iter)
@@ -165,7 +190,7 @@ void Task::writeToFile(QString filename, QString toWrite)
     outputFile.close();
 }
 
-void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
+void Task::updatePositions(intIntMap *positions)
 {
     int user_id = 0;
     int tmp_user_id = 0;
@@ -196,23 +221,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
             position_matching++;
             uplines_count = 0;
             promote = false;
-            for(jiter=uplines->begin();jiter != uplines->end();++jiter)
-            {
-                upline_id = jiter.key();
-                tmp_user_id = jiter.value();
-                std::cout << "\tID:" << jiter.key() << "VALUE: " << jiter.value() << std::endl;
-                // this user does not have a position
-                if(!positions->keys().contains(tmp_user_id)) continue;
-                // this user's position is not match_position!
-                if(positions->value(tmp_user_id) < match_position)
-                if(user_id == upline_id)
-                    uplines_count++;
-                if(uplines_count >= promote_qualifier)
-                {
-                    promote = true;
-                    break;
-                }
-            }
+
             if(promote)
             {
                 current_position++;
