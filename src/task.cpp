@@ -180,7 +180,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
     // loop 1 set all positions to 1
     for(iiter =positions->begin(); iiter != positions->end(); ++iiter)
     {
-        std::cout << "ID:" << iiter.key() << "VALUE:" << iiter.value() << std::endl;
+        // std::cout << "ID:" << iiter.key() << "VALUE:" << iiter.value() << std::endl;
         positions->value(iiter.key(), 1);
     }
     // loop for all positions check if there are positions that have
@@ -189,6 +189,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
         position_matching = 0;
         for(iiter=positions->begin(); iiter != positions->end(); ++iiter)
         {
+            std::cout << "ID:" << iiter.key() << "VALUE:" << iiter.value() << std::endl;
             user_id = iiter.key();
             current_position = iiter.value();
             if(current_position != match_position) continue;
