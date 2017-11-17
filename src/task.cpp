@@ -75,6 +75,7 @@ void Task::run(void)
         exit(1);
     }
     // get the positions
+    std::cout << "Getting data..." << std::endl;
     QSqlQuery q1("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
     while(q1.next())
     {
@@ -102,6 +103,7 @@ void Task::run(void)
         exit(1);
     }
     // get the positions again
+    std::cout << "Getting data..." << std::endl;
     QSqlQuery q2("SELECT user_ptr_id,position_id FROM userprofile");
     while(q2.next())
     {
@@ -212,6 +214,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
                 positions->value(user_id, current_position);
             }
         }
+        std::cout << "Gathering Next Position : " << match_position << std::endl;
         match_position++;
         if(position_matching <= 0) break;   // break if there are no more matching positions
         if(match_position > 20) break;      // if this is reached!
