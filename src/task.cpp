@@ -86,7 +86,7 @@ void Task::run(void)
         user_id = q1.value(0).toInt();
         position_id = q1.value(1).toInt();
         upline_id = q1.value(2).toInt();
-        positions1[user_id] = position_id;
+        positions1[user_id] = 1;
         if(!upline_ids1.keys().contains(upline_id))
         {
             qListInt = QList<int>();
@@ -126,7 +126,7 @@ void Task::run(void)
         user_id = q2.value(0).toInt();
         position_id = q2.value(1).toInt();
         upline_id = q2.value(2).toInt();
-        positions1[user_id] = position_id;
+        positions2[user_id] = 1;
         if(!upline_ids2.keys().contains(upline_id))
         {
             qListInt = QList<int>();
@@ -199,12 +199,6 @@ void Task::updatePositions(intIntMap *positions, intIntListMap *uplines)
     bool promote = false;
     QMap<int, int>::iterator iiter; // loop iterator (i)
     QMap<int, int>::iterator jiter; // loop iterator (j)
-    // loop 1 set all positions to 1
-    for(iiter =positions->begin(); iiter != positions->end(); ++iiter)
-    {
-        // std::cout << "ID:" << iiter.key() << "VALUE:" << iiter.value() << std::endl;
-        positions->insert(iiter.key(), 1);
-    }
     // loop for all positions check if there are positions that have
     while(true)
     {
