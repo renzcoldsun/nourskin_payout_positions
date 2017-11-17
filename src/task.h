@@ -9,6 +9,8 @@
 #include <QDateTime>
 #include <iostream>
 
+#define promote_qualifier 5
+
 typedef QMap<int, float> floatMap;
 typedef QMap<int, int> intIntMap;
 

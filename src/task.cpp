@@ -165,8 +165,57 @@ void Task::writeToFile(QString filename, QString toWrite)
 
 void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
 {
-    for(QMap<int, int>::iterator iiter=positions->begin(); iiter != positions->end(); ++iiter)
+    int user_id = 0;
+    int tmp_user_id = 0;
+    int upline_id = 0;
+    int uplines_count = 0;
+    int current_position = 0;
+    int position_matching = 0;
+    int match_position = 2;
+    bool promote = false;
+    QMap<int, int>::iterator iiter; // loop iterator (i)
+    QMap<int, int>::iterator jiter; // loop iterator (j)
+    // loop 1 set all positions to 1
+    for(iiter =positions->begin(); iiter != positions->end(); ++iiter)
         positions->value(iiter.key(), 1);
+    // loop for all positions check if there are positions that have
+    while(true)
+    {
+        position_matching = 0;
+        for(iiter=positions->begin(); iiter != positions->end(); ++iiter)
+        {
+            user_id = iiter.key();
+            current_position = iiter.value();
+            if(current_position != match_position) continue;
+            position_matching++;
+            uplines_count = 0;
+            promote = false;
+            for(jiter=uplines->begin();jiter != uplines->end();++jiter)
+            {
+                upline_id = jiter.key();
+                tmp_user_id = jiter.value();
+                // this user does not have a position
+                if(!positions->keys().contains(tmp_user_id)) continue;
+                // this user's position is not match_position!
+                if(positions->value(tmp_user_id) < match_position)
+                if(user_id == upline_id)
+                    uplines_count++;
+                if(uplines_count >= promote_qualifier)
+                {
+                    promote = true;
+                    break;
+                }
+            }
+            if(promote)
+            {
+                current_position++;
+                positions->value(user_id, current_position);
+            }
+        }
+        match_position++;
+        if(position_matching <= 0) break;   // break if there are no more matching positions
+        if(match_position > 20) break;      // if this is reached!
+    }
 
 }
 
