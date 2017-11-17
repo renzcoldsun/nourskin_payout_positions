@@ -189,7 +189,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
         position_matching = 0;
         for(iiter=positions->begin(); iiter != positions->end(); ++iiter)
         {
-            std::cout << "ID:" << iiter.key() << "VALUE:" << iiter.value() << std::endl;
+            std::cout << "ID:" << iiter.key() << "VALUE: " << iiter.value() << std::endl;
             user_id = iiter.key();
             current_position = iiter.value();
             if(current_position < match_position) continue;
@@ -200,6 +200,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
             {
                 upline_id = jiter.key();
                 tmp_user_id = jiter.value();
+                std::cout << "\tID:" << jiter.key() << "VALUE: " << jiter.value() << std::endl;
                 // this user does not have a position
                 if(!positions->keys().contains(tmp_user_id)) continue;
                 // this user's position is not match_position!
