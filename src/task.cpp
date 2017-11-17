@@ -173,7 +173,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
     int uplines_count = 0;
     int current_position = 0;
     int position_matching = 0;
-    int match_position = 2;
+    int match_position = 1;
     bool promote = false;
     QMap<int, int>::iterator iiter; // loop iterator (i)
     QMap<int, int>::iterator jiter; // loop iterator (j)
@@ -192,7 +192,7 @@ void Task::updatePositions(intIntMap *positions, intIntMap *uplines)
             std::cout << "ID:" << iiter.key() << "VALUE:" << iiter.value() << std::endl;
             user_id = iiter.key();
             current_position = iiter.value();
-            if(current_position != match_position) continue;
+            if(current_position < match_position) continue;
             position_matching++;
             uplines_count = 0;
             promote = false;
