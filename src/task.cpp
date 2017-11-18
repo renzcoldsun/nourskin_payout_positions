@@ -24,11 +24,10 @@ void Task::run(void)
     positions2 = QMap<int, int>();
     changedPositions = QMap<int, int>();
     userInfo = QMap<int, QString>();
-    upline_ids1 = QMap<int, QList<int> >();
-    upline_ids2 = QMap<int, QList<int> >();
+    downline_ids1 = QMap<int, QList<int> >();
+    downline_ids2 = QMap<int, QList<int> >();
     int user_id = 0;
     int upline_id = 0;
-    int position_id = 0;
 
     // initialize report output
     QDateTime dTime = QDateTime::currentDateTime();
@@ -80,22 +79,21 @@ void Task::run(void)
     }
     // get the positions
     std::cout << "Getting data..." << std::endl;
-    QSqlQuery q1("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
+    QSqlQuery q1("SELECT user_ptr_id,position_id,upline_id_id FROM payout_userprofile");
     while(q1.next())
     {
         user_id = q1.value(0).toInt();
-        position_id = q1.value(1).toInt();
         upline_id = q1.value(2).toInt();
         positions1[user_id] = 1;
-        if(!upline_ids1.keys().contains(upline_id))
+        if(!downline_ids1.keys().contains(upline_id))
         {
             qListInt = QList<int>();
             qListInt.append(user_id);
         } else {
-            qListInt = upline_ids1.value(upline_id);
+            qListInt = downline_ids1.value(upline_id);
             qListInt.append(user_id);
         }
-        upline_ids1.insert(upline_id, qListInt);
+        downline_ids1.insert(upline_id, qListInt);
         // upline_ids1[q1.value(0).toInt()] = q1.value(2).toInt();
         // QString toWrite = q1.value(0).toString() + QString(":") + q1.value(1).toString();
         // writeToFile(csv_file01, toWrite);
@@ -103,7 +101,7 @@ void Task::run(void)
     std::cout << "This positions collection has this number of record: " << positions1.count() << std::endl;
     db.close();
     // update the positions in this one.
-    this->updatePositions(&positions1, &upline_ids1);
+    this->updatePositions(&positions1, &downline_ids1);
     
     // flush the second file;
     shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %3").arg(username, password, endMonthFile);
@@ -120,26 +118,25 @@ void Task::run(void)
     }
     // get the positions again
     std::cout << "Getting data..." << std::endl;
-    QSqlQuery q2("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
+    QSqlQuery q2("SELECT user_ptr_id,position_id,upline_id_id FROM payout_userprofile");
     while(q2.next())
     {
         user_id = q2.value(0).toInt();
-        position_id = q2.value(1).toInt();
         upline_id = q2.value(2).toInt();
         positions2[user_id] = 1;
-        if(!upline_ids2.keys().contains(upline_id))
+        if(!downline_ids2.keys().contains(upline_id))
         {
             qListInt = QList<int>();
             qListInt.append(user_id);
         } else {
-            qListInt = upline_ids2.value(upline_id);
+            qListInt = downline_ids2.value(upline_id);
             qListInt.append(user_id);
         }
-        upline_ids2.insert(upline_id, qListInt);
+        downline_ids2.insert(upline_id, qListInt);
     }
     std::cout << "This positions collection has this number of record: " << positions2.count() << std::endl;
     // update the positions in this one.
-    this->updatePositions(&positions2, &upline_ids2);
+    this->updatePositions(&positions2, &downline_ids2);
     // compare the positions
     QMap<int, int>::iterator iter;
     for(iter = positions2.begin();iter != positions2.end(); ++iter)
@@ -190,53 +187,64 @@ void Task::writeToFile(QString filename, QString toWrite)
     outputFile.close();
 }
 
-void Task::updatePositions(intIntMap *positions, intIntListMap *uplines)
+void Task::updatePositions(intIntMap *positions, intIntListMap *downlineCollection)
 {
     int user_id = 0;
+    int downline_user_id=0;
+    int downline_position_id=0;
+    int qualified_downlines = 0;
     int current_position = 0;
     int position_matching = 0;
     int match_position = 1;
-    bool promote = false;
+    intIntMap positions_temp = *positions;
     QMap<int, int>::iterator iiter; // loop iterator (i)
-    QMap<int, int>::iterator jiter; // loop iterator (j)
+    QList<int> downlines = QList<int>();
     // loop for all positions check if there are positions that have
     while(true)
     {
+        // positions matching. if this counter is still zero after the for loop
+        // below, we can break from the loop expecting there are no more
+        // users with higher positions
         position_matching = 0;
+        // loop through all the users
         for(iiter=positions->end(); iiter != positions->begin(); iiter--)
         {
+            // get the user id
             user_id = iiter.key();
+            // get the current position of this user
             current_position = iiter.value();
+            // qualified_downlines to 0
+            qualified_downlines = 0;
+            // if the current position of this user is not equal to the
+            // matching position, go to the next user
             if(current_position != match_position) continue;
+            // since the current position matches the match position, we increment position_matching
             position_matching++;
-            promote = false;
-            QList<int> downLines = uplines->value(user_id);
-            if(downLines.count() < promote_qualifier) continue;
-            int qualified_downlines_count = 0;
-            foreach(int downline_id, downLines)
+            downlines = downlineCollection->value(user_id);
+            // loop through the downlines. check if there are users with matching positions
+            for(int i=0;i < downlines.size(); ++i)
             {
-                int downline_position = positions->value(downline_id);
-                if(downline_position >= match_position)
-                    qualified_downlines_count++;
-                if(qualified_downlines_count > promote_qualifier)
+                downline_user_id = downlines.at(i);
+                downline_position_id = positions->value(downline_user_id);
+                if(downline_position_id == position_matching)
                 {
-                    promote = true;
-                    break;
+                    qualified_downlines++;
                 }
             }
-
-            if(promote)
+            if(qualified_downlines >= promote_qualifier)
             {
                 current_position++;
-                positions->insert(user_id, current_position);
+                positions_temp.insert(user_id, current_position);
             }
         }
         std::cout << "Total Matching This Position : " << position_matching << std::endl;
         std::cout << "Gathering Next Position : " << match_position << std::endl;
         match_position++;
         if(position_matching <= 0) break;   // break if there are no more matching positions
-        if(match_position > 20) break;      // if this is reached!
+        // we are almost always sure that if match_position reached 20
+        // there will be chaos after 21 due to complexity of the MLM structure
+        if(match_position > 20) break;
     }
-
+    *positions = positions_temp;
 }
 
