@@ -207,7 +207,7 @@ void Task::updatePositions(intIntMap *positions, intIntListMap *downlineCollecti
         // users with higher positions
         position_matching = 0;
         // loop through all the users
-        for(iiter=positions->end(); iiter != positions->begin(); iiter--)
+        for(iiter=positions->begin(); iiter != positions->end(); ++iiter)
         {
             // get the user id
             user_id = iiter.key();
