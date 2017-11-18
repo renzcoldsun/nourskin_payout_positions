@@ -222,12 +222,11 @@ void Task::updatePositions(intIntMap *positions, intIntListMap *downlineCollecti
             position_matching++;
             downlines = downlineCollection->value(user_id);
             // loop through the downlines. check if there are users with matching positions
-            std::cout << "User :" << user_id << " has downlines: " << downlines.size() << std::endl;
             for(int i=0;i < downlines.size(); ++i)
             {
                 downline_user_id = downlines.at(i);
                 downline_position_id = positions->value(downline_user_id);
-                if(downline_position_id == position_matching)
+                if(downline_position_id == match_position)
                 {
                     qualified_downlines++;
                 }
