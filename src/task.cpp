@@ -235,6 +235,7 @@ void Task::updatePositions(intIntMap *positions, intIntListMap *downlineCollecti
             {
                 current_position++;
                 positions_temp.insert(user_id, current_position);
+                std::cout << "USER :: " << user_id << " PROMOTED TO " << current_position << std::endl;
             }
         }
         std::cout << "Total Matching This Position : " << position_matching << std::endl;
