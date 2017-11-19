@@ -144,24 +144,23 @@ void Task::run(void)
     {
         int id = iter.key();
         int position = iter.value();
-        if(positions1.contains(id))
+        if(!positions1.keys().contains(id))
         {
-            // this user already exists. check if this user
-            // has a changed position
-            int old_position = positions1[id];
-            if(position != old_position)
-                changedPositions[id] = position;
-        } else {
-            // this user does not exist previously.
-            // just add to the changedPositions variable
-            changedPositions[id] = position;
+            changedPositions.insert(id, positions2.value(id));
+            continue;
+        }
+        if(positions1.value(id) != positions2.value(id))
+        {
+            changedPositions.insert(id, positions2.value(id));
+            continue;
         }
     }
 
     // we got a list of positions. let's get the info to save to a CSV
-    std::cout << std::endl << "Number of changed positions: " << changedPositions.count() << std::endl << std::endl;
+
     if(changedPositions.count() > 0)
     {
+        std::cout << std::endl << "Number of changed positions: " << changedPositions.count() << std::endl << std::endl;
         for(QMap<int, int>::iterator iiter = changedPositions.begin();iiter != changedPositions.end(); ++iter)
         {
             int id = iiter.key();
@@ -169,6 +168,8 @@ void Task::run(void)
             QString writeThis = QString("%1:%2").arg(id, position);
             writeToFile(reportFile, writeThis);
         }
+    } else {
+        std::cout << "There are no changed positions." << std::endl;
     }
 
     emit finished();
@@ -197,14 +198,14 @@ void Task::updatePositions(int where)
     {
         for(int pos=1;pos<final_position;pos++)
         {
-            std::cout << "Working on Position :: " << pos << std::endl;
+            // std::cout << "Working on Position :: " << pos << std::endl;
             for(QMap<int, int>::iterator userIter=positions1.begin();userIter != positions1.end();++userIter)
             {
                 downline_qualified = 0;
                 user_id = userIter.key();
                 user_position_id = userIter.value();
                 if(user_position_id != pos) continue;
-                std::cout << std::endl << "Working on user id: " << user_id << " :: " ;
+                //std::cout << std::endl << "Working on user id: " << user_id << " :: " ;
                 foreach(int downline_id, downline_ids1.value(user_id))
                 {
                     int downline_position = positions1.value(downline_id);
@@ -223,14 +224,14 @@ void Task::updatePositions(int where)
     {
         for(int pos=1;pos<final_position;pos++)
         {
-            std::cout << "Working on Position :: " << pos << std::endl;
+            // std::cout << "Working on Position :: " << pos << std::endl;
             for(QMap<int, int>::iterator userIter=positions2.begin();userIter != positions2.end();++userIter)
             {
                 downline_qualified = 0;
                 user_id = userIter.key();
                 user_position_id = userIter.value();
                 if(user_position_id != pos) continue;
-                std::cout << std::endl << "Working on user id: " << user_id << " :: " ;
+                // std::cout << std::endl << "Working on user id: " << user_id << " :: " ;
                 foreach(int downline_id, downline_ids2.value(user_id))
                 {
                     int downline_position = positions2.value(downline_id);
