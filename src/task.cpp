@@ -210,6 +210,11 @@ void Task::updatePositions(int where)
                     int downline_position = positions1.value(downline_id);
                     if(downline_position == pos) ++downline_qualified;
                     std::cout << downline_id << " ";
+                    if(downline_qualified >= promote_qualifier)
+                    {
+                        positions1.insert(user_id, user_position_id + 1);
+                        break;
+                    }
                 }
 
             }
@@ -231,6 +236,11 @@ void Task::updatePositions(int where)
                     int downline_position = positions2.value(downline_id);
                     if(downline_position == pos) ++downline_qualified;
                     std::cout << downline_id << " ";
+                    if(downline_qualified >= promote_qualifier)
+                    {
+                        positions2.insert(user_id, user_position_id + 1);
+                        break;
+                    }
                 }
 
             }
