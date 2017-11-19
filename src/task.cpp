@@ -80,7 +80,7 @@ void Task::run(void)
     }
     // get the positions
     std::cout << "Getting data..." << std::endl;
-    QSqlQuery q1("SELECT user_ptr_id,position_id,upline_id_id FROM payout_userprofile");
+    QSqlQuery q1("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
     while(q1.next())
     {
         user_id = q1.value(0).toInt();
@@ -117,7 +117,7 @@ void Task::run(void)
     }
     // get the positions again
     std::cout << "Getting data..." << std::endl;
-    QSqlQuery q2("SELECT user_ptr_id,position_id,upline_id_id FROM payout_userprofile");
+    QSqlQuery q2("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
     while(q2.next())
     {
         user_id = q2.value(0).toInt();
@@ -210,7 +210,7 @@ void Task::updatePositions(int where)
                 {
                     int downline_position = positions1.value(downline_id);
                     if(downline_position == pos) ++downline_qualified;
-                    std::cout << downline_id << " ";
+                    // std::cout << downline_id << " ";
                     if(downline_qualified >= promote_qualifier)
                     {
                         positions1.insert(user_id, user_position_id + 1);
