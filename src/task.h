@@ -10,6 +10,7 @@
 #include <iostream>
 
 #define promote_qualifier 5
+#define final_position 10
 
 typedef QMap<int, float> floatMap;
 typedef QMap<int, int> intIntMap;
@@ -35,7 +36,7 @@ private:
     QMap<int, QString> userInfo;
     intIntListMap downline_ids1, downline_ids2;
 
-    void updatePositions(intIntMap *, intIntListMap *uplines);
+    void updatePositions(int);
     void writeToFile(QString, QString);
 };
 
