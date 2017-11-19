@@ -143,7 +143,6 @@ void Task::run(void)
     for(iter = positions2.begin();iter != positions2.end(); ++iter)
     {
         int id = iter.key();
-        int position = iter.value();
         if(!positions1.keys().contains(id))
         {
             changedPositions.insert(id, positions2.value(id));
