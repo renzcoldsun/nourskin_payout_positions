@@ -63,7 +63,7 @@ void Task::run(void)
     std::cout << "Running: " << shellCommand.toStdString() << std::endl;
     shellProcess.start("/usr/bin/bash");
     shellProcess.write(shellCommand.toStdString().c_str());
-    shellProcess.waitForFinished();
+    shellProcess.waitForFinished(-1);
     shellProcess.close();
 
     // connect
@@ -107,7 +107,7 @@ void Task::run(void)
     std::cout << "Running: " << shellCommand.toStdString() << std::endl;
     shellProcess.start("/usr/bin/bash");
     shellProcess.write(shellCommand.toStdString().c_str());
-    shellProcess.waitForFinished();
+    shellProcess.waitForFinished(-1);
     shellProcess.close();
     // reopen
     if(!db.open())
