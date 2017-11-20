@@ -60,12 +60,13 @@ void Task::run(void)
     }
     // get the positions
     std::cout << "Getting data..." << std::endl;
-    QString sqlQuery1 = QString("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile WHERE date_joined <= '%1'").arg(this->startDate);
+    QString sqlQuery1 = QString("SELECT user_ptr_id,position_id,upline_id_id,username FROM userprofile WHERE date_joined <= '%1'").arg(this->startDate);
     QSqlQuery q1(sqlQuery1);
     while(q1.next())
     {
         user_id = q1.value(0).toInt();
         upline_id = q1.value(2).toInt();
+        userInfo.insert(user_id, q1.value(3).toString());
         positions1[user_id] = 1;
         qListInt = QList<int>();
         if(!downline_ids1.keys().contains(upline_id))
@@ -97,6 +98,7 @@ void Task::run(void)
     {
         user_id = q2.value(0).toInt();
         upline_id = q2.value(2).toInt();
+        userInfo.insert(user_id, q1.value(3).toString());
         positions2[user_id] = 1;
         qListInt = QList<int>();
         if(!downline_ids2.keys().contains(upline_id))
@@ -141,7 +143,7 @@ void Task::run(void)
         {
             int id = iiter.key();
             int position = iiter.value();
-            QString writeThis = QString("%1:%2").arg(id, position);
+            QString writeThis = QString("%1,%2,%3").arg(userInfo.value(id),QString::number(id), QString::number(position));
             writeToFile(reportFile, writeThis);
         }
     } else {
@@ -160,7 +162,6 @@ void Task::writeToFile(QString filename, QString toWrite)
         std::cout << "Unable to write to file" << filename.toStdString() << std::endl;
         exit(10);
     }
-    std::cout << toWrite.toStdString() << std::endl;
     QTextStream outStream(&outputFile);
     outStream << toWrite << QString("\n");
     outputFile.close();
