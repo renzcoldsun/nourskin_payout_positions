@@ -116,10 +116,10 @@ void Task::run(void)
     // compare the positions
 
     std::cout << "Comparing New Postitions..." << std::endl;
-    for(iter = positions2.begin();iter != positions2.end(); ++iter)
+    for(iter = positions2.begin();iter != positions2.end(); iter++)
     {
         int id = iter.key();
-        if(!positions1.keys().contains(id))
+        if(positions1.value(id, -500) == -500) // surely there will be no user with key == -500
         {
             std::cout << "User ID " << id << " is New" << std::endl;
             changedPositions.insert(id, positions2.value(id));
