@@ -172,7 +172,7 @@ void Task::updatePositions(int where)
     {
         for(int pos=1;pos<final_position;pos++)
         {
-            // std::cout << "Working on Position :: " << pos << std::endl;
+            std::cout << "Working on Position (1) :: " << pos << std::endl;
             for(QMap<int, int>::iterator userIter=positions1.begin();userIter != positions1.end();++userIter)
             {
                 downline_qualified = 0;
@@ -198,7 +198,7 @@ void Task::updatePositions(int where)
     {
         for(int pos=1;pos<final_position;pos++)
         {
-            // std::cout << "Working on Position :: " << pos << std::endl;
+            std::cout << "Working on Position (2) :: " << pos << std::endl;
             for(QMap<int, int>::iterator userIter=positions2.begin();userIter != positions2.end();++userIter)
             {
                 downline_qualified = 0;
