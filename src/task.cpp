@@ -37,7 +37,7 @@ void Task::run(void)
     QString hostname = settings.value("hostname").toString();
     QString username = settings.value("username").toString();
     QString password = settings.value("password").toString();
-    std::cout << "Possible outcome will be stored in this file: " << reportFile.toStdString() << std::endl << std::endl;
+    std::cout << std::endl << std::endl << "Possible outcome will be stored in this file: " << reportFile.toStdString() << std::endl << std::endl;
     if(!this->verifyDate(this->startDate))
         this->exitUsage(2);
     if(!this->verifyDate(this->endDate))
@@ -123,13 +123,13 @@ void Task::run(void)
         int id = iter.key();
         if(positions1.value(id, -500) == -500) // surely there will be no user with key == -500
         {
-            std::cout << "User ID " << id << " is New" << std::endl;
+            // std::cout << "User ID " << id << " is New" << std::endl;
             changedPositions.insert(id, positions2.value(id));
             continue;
         }
         if(positions1.value(id) != positions2.value(id))
         {
-            std::cout << "User ID " << id << " is Changed Position" << std::endl;
+            // std::cout << "User ID " << id << " is Changed Position" << std::endl;
             changedPositions.insert(id, positions2.value(id));
         }
     }
