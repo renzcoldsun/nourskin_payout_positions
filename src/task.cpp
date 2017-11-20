@@ -98,7 +98,7 @@ void Task::run(void)
     {
         user_id = q2.value(0).toInt();
         upline_id = q2.value(2).toInt();
-        userInfo.insert(user_id, q1.value(3).toString());
+        userInfo.insert(user_id, q2.value(3).toString());
         positions2[user_id] = 1;
         qListInt = QList<int>();
         if(!downline_ids2.keys().contains(upline_id))
