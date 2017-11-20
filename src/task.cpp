@@ -237,6 +237,5 @@ bool Task::verifyDate(QString date)
     QStringList dateSeparated;
     dateSeparated = date.split('-');
     if(dateSeparated.count() != 3) return false;
-    QDate date = QDate::fromString(date,"yyyy-MM-dd");
     return false;
 }
