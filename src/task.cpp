@@ -241,5 +241,5 @@ bool Task::verifyDate(QString date)
         std::cout << date.toStdString() << std::endl;
         return false;
     }
-    return false;
+    return true;
 }
