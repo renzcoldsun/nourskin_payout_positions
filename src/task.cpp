@@ -160,6 +160,7 @@ void Task::writeToFile(QString filename, QString toWrite)
         std::cout << "Unable to write to file" << filename.toStdString() << std::endl;
         exit(10);
     }
+    std::cout << toWrite.toStdString() << std::endl;
     QTextStream outStream(&outputFile);
     outStream << toWrite << QString("\n");
     outputFile.close();
