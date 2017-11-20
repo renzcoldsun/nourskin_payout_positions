@@ -92,7 +92,7 @@ void Task::run(void)
     }
     // get the positions again
     std::cout << "Getting data..." << std::endl;
-    QString sqlQuery2 = QString("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile WHERE date_joined <= '%1'").arg(this->endDate);
+    QString sqlQuery2 = QString("SELECT user_ptr_id,position_id,upline_id_id,username FROM userprofile WHERE date_joined <= '%1'").arg(this->endDate);
     QSqlQuery q2(sqlQuery2);
     while(q2.next())
     {
