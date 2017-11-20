@@ -238,7 +238,7 @@ bool Task::verifyDate(QString date)
     dateSeparated = date.split('-');
     if(dateSeparated.count() != 3)
     {
-        qDebug() << dateSeparated;
+        std::cout << date << std::endl;
         return false;
     }
     return false;
