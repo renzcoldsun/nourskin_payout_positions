@@ -137,7 +137,7 @@ void Task::run(void)
     if(changedPositions.count() > 0)
     {
         std::cout << std::endl << "Number of changed positions: " << changedPositions.count() << std::endl << std::endl;
-        for(QMap<int, int>::iterator iiter = changedPositions.begin();iiter != changedPositions.end(); ++iter)
+        for(QMap<int, int>::iterator iiter = changedPositions.begin();iiter != changedPositions.end(); ++iiter)
         {
             int id = iiter.key();
             int position = iiter.value();
