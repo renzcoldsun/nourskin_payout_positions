@@ -41,7 +41,7 @@ void Task::run(void)
     if(!this->verifyDate(this->startDate))
         this->exitUsage(2);
     if(!this->verifyDate(this->endDate))
-        this->exitUsage(2);
+        this->exitUsage(3);
 
     this->startDate = QString("%1 23:59:59").arg(this->startDate);
     this->endDate = QString("%1 23:59:59").arg(this->endDate);
@@ -56,7 +56,7 @@ void Task::run(void)
     if(!db.open())
     {
         std::cout << "Cannot connect to the database" << std::endl;
-        exit(1);
+        exit(4);
     }
     // get the positions
     std::cout << "Getting data..." << std::endl;
@@ -87,7 +87,7 @@ void Task::run(void)
     if(!db.open())
     {
         std::cout << "Cannot connect again to the database" << std::endl;
-        exit(1);
+        exit(5);
     }
     // get the positions again
     std::cout << "Getting data..." << std::endl;
@@ -156,7 +156,7 @@ void Task::writeToFile(QString filename, QString toWrite)
     if(!outputFile.isOpen())
     {
         std::cout << "Unable to write to file" << filename.toStdString() << std::endl;
-        exit(1);
+        exit(10);
     }
     QTextStream outStream(&outputFile);
     outStream << toWrite << QString("\n");
@@ -236,6 +236,10 @@ bool Task::verifyDate(QString date)
 {
     QStringList dateSeparated;
     dateSeparated = date.split('-');
-    if(dateSeparated.count() != 3) return false;
+    if(dateSeparated.count() != 3)
+    {
+        qDebug() << dateSeparated;
+        return false;
+    }
     return false;
 }
