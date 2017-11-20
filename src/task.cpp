@@ -115,18 +115,20 @@ void Task::run(void)
     this->updatePositions(2);
     // compare the positions
 
+    std::cout << "Comparing New Postitions..." << std::endl;
     for(iter = positions2.begin();iter != positions2.end(); ++iter)
     {
         int id = iter.key();
         if(!positions1.keys().contains(id))
         {
+            std::cout << "User ID " << id << " is New" << std::endl;
             changedPositions.insert(id, positions2.value(id));
             continue;
         }
         if(positions1.value(id) != positions2.value(id))
         {
+            std::cout << "User ID " << id << " is Changed Position" << std::endl;
             changedPositions.insert(id, positions2.value(id));
-            continue;
         }
     }
 
