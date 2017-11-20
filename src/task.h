@@ -21,8 +21,9 @@ class Task : public QObject
     Q_OBJECT
 public:
     explicit Task(QObject *parent = 0);
-    QString startMonthFile;
-    QString endMonthFile;
+    QString startDate;
+    QString endDate;
+    void exitUsage(int);
 signals:
     void finished(void);
 public slots:
@@ -36,6 +37,7 @@ private:
     QMap<int, QString> userInfo;
     intIntListMap downline_ids1, downline_ids2;
 
+    bool verifyDate(QString);
     void updatePositions(int);
     void writeToFile(QString, QString);
 };

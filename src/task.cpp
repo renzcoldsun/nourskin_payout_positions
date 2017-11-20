@@ -12,12 +12,7 @@ Task::Task(QObject *parent) :
 
 void Task::run(void)
 {
-    QFile Fout1(startMonthFile);
-    QFile Fout2(endMonthFile);
-    QProcess shellProcess;
     QSettings settings("/etc/nourskin_positions.ini", QSettings::IniFormat);
-    // QString csv_file01 = "/tmp/positions_csv_out_01.txt";
-    // QString csv_file02 = "/tmp/positions_csv_out_02.txt";
     QList<int> qListInt = QList<int>();
     QMap<int, int>::iterator iter;
     // initialize QMaps;
@@ -42,36 +37,21 @@ void Task::run(void)
     QString hostname = settings.value("hostname").toString();
     QString username = settings.value("username").toString();
     QString password = settings.value("password").toString();
+    std::cout << "Possible outcome will be stored in this file: " << reportFile.toStdString() << std::endl << std::endl;
+    if(!this->verifyDate(this->startDate))
+        this->exitUsage(2);
+    if(!this->verifyDate(this->endDate))
+        this->exitUsage(2);
 
-    // check out the files supplied
-    if(!Fout1.exists())
-    {
-        std::cout << "I am not able to see this file: " << startMonthFile.toStdString() << std::endl;
-        exit(1);
-    } else {
-        std::cout << "file exists : " << startMonthFile.toStdString() << std::endl;
-    }
-    if(!Fout2.exists())
-    {
-        std::cout << "I am not able to see this file: " << endMonthFile.toStdString() << std::endl;
-        exit(1);
-    } else {
-        std::cout << "file exists : " << endMonthFile.toStdString() << std::endl;
-    }
-    // flush the first file;
-    QString shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %3").arg(username, password, startMonthFile);
-    std::cout << "Running: " << shellCommand.toStdString() << std::endl;
-    shellProcess.start("/usr/bin/bash");
-    shellProcess.write(shellCommand.toStdString().c_str());
-    shellProcess.waitForFinished(-1);
-    shellProcess.close();
+    this->startDate = QString("%1 23:59:59").arg(this->startDate);
+    this->endDate = QString("%1 23:59:59").arg(this->endDate);
 
     // connect
     db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName(hostname);
     db.setUserName(username);
     db.setPassword(password);
-    db.setDatabaseName("nourskin_playpen");
+    db.setDatabaseName("nourskin");
     db.setPort(3306);
     if(!db.open())
     {
@@ -80,7 +60,8 @@ void Task::run(void)
     }
     // get the positions
     std::cout << "Getting data..." << std::endl;
-    QSqlQuery q1("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
+    QString sqlQuery1 = QString("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile WHERE date_joined <= '%1'").arg(this->startDate);
+    QSqlQuery q1(sqlQuery1);
     while(q1.next())
     {
         user_id = q1.value(0).toInt();
@@ -102,13 +83,6 @@ void Task::run(void)
     std::cout << "This positions collection has this number of record: " << positions1.count() << std::endl;
     db.close();
     
-    // flush the second file;
-    shellCommand = QString("/usr/bin/mysql -S /var/lib/mysql/mysql.sock -u %1 -p%2 nourskin_playpen < %3").arg(username, password, endMonthFile);
-    std::cout << "Running: " << shellCommand.toStdString() << std::endl;
-    shellProcess.start("/usr/bin/bash");
-    shellProcess.write(shellCommand.toStdString().c_str());
-    shellProcess.waitForFinished(-1);
-    shellProcess.close();
     // reopen
     if(!db.open())
     {
@@ -117,7 +91,8 @@ void Task::run(void)
     }
     // get the positions again
     std::cout << "Getting data..." << std::endl;
-    QSqlQuery q2("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile");
+    QString sqlQuery2 = QString("SELECT user_ptr_id,position_id,upline_id_id FROM userprofile WHERE date_joined <= '%1'").arg(this->endDate);
+    QSqlQuery q2(sqlQuery2);
     while(q2.next())
     {
         user_id = q2.value(0).toInt();
@@ -250,3 +225,18 @@ void Task::updatePositions(int where)
     }
 }
 
+void Task::exitUsage(int exitCode)
+{
+    std::cout << "Not enough arguments" << std::endl;
+    std::cout << "./positions <start date yyyy-MM-dd> <end date yyyy-MM-dd>" << std::endl;
+    exit(exitCode);
+}
+
+bool Task::verifyDate(QString date)
+{
+    QStringList dateSeparated;
+    dateSeparated = date.split('-');
+    if(dateSeparated.count() != 3) return false;
+    QDate date = QDate::fromString(date,"yyyy-MM-dd");
+    return false;
+}
